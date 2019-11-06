@@ -12,7 +12,7 @@
 //#define sec 1000000
 
 using namespace std;
-const int wt = 10, ht = 5;
+const int wt = 60, ht = 30;
 
 struct Charecter
 {
@@ -20,9 +20,9 @@ struct Charecter
 	int y;
 };
 
-void frame(char** map, Charecter p, int mvs)
+void frame(char** map, Charecter p, int mvs, unsigned char* smap)
 {
-	char smap[] = "###########    # # ## ## #   ## F#   # ###########";
+	//char smap[] = "###########    # # ## ## #   ## F#   # ###########";
 	for(int i = 0; i < ht; i++)
 	{
 		for(int j = 0; j < wt; j++)
@@ -31,10 +31,18 @@ void frame(char** map, Charecter p, int mvs)
             {
                 map[i][j] = '@';
             }
+			else if(smap[i+j+(wt-1)*i]==0)
+			{
+				map[i][j] = '#';
+			}
+			else if((j == 2)&&(i == ht-2))
+			{
+				map[i][j] = 'F';
+			}
 			else
 			{
-				map[i][j] = smap[i+j+(wt-1)*i];
-			}
+			map[i][j] = ' ';
+			}			
 		}
 	}
 	
@@ -56,6 +64,7 @@ void frame(char** map, Charecter p, int mvs)
 	printw("To quit press q\n");
 }
 
+/*
 void init_map(char** map)
 {
 	char smap[] = "###########    # # ## ## #   ## F#   # ###########";
@@ -66,6 +75,33 @@ void init_map(char** map)
 			map[i][j] = smap[i+j+(wt-1)*i];
 		}
 	}
+}
+*/
+
+unsigned char* readBMP(char* filename)
+{
+    int i;
+    FILE* f = fopen(filename, "rb");
+    unsigned char info[54];
+    fread(info, sizeof(unsigned char), 54, f); // read the 54-byte header
+
+    // extract image height and width from header
+    int width = *(int*)&info[18];
+    int height = *(int*)&info[22];
+    int size = 3 * width * height;
+	
+    unsigned char* data = new unsigned char[size]; // allocate 3 bytes per pixel
+    fread(data, sizeof(unsigned char), size, f); // read the rest of the data at once
+    fclose(f);
+
+    for(i = 0; i < size; i += 3)
+    {
+            unsigned char tmp = data[i];
+            data[i] = data[i+2];
+            data[i+2] = tmp;
+    }
+
+    return data;
 }
 
 void finish(short a, int mvs)
@@ -101,14 +137,24 @@ int main()
 
 	int moves = 0;
 	
-	init_map(map);
+	char fname[] = "maze2.bmp";
+	unsigned char* predata = readBMP(fname);
+	unsigned char* data = new unsigned char [wt*ht];
+	int j = 0;
+	for(int i = 0; i < wt*ht*3; i += 3)
+	{
+		data[j] = predata[i];
+		j++;
+	}
+	
+	delete [] predata;
 	
 	initscr();
 	//usleep(sec/2);
 	int x;
 	while(true)
 	{
-		frame(map,p,moves);
+		frame(map,p,moves,data);
 		refresh();
 		x = getch();
 		
@@ -180,34 +226,34 @@ int main()
 60x30
 ############################################################
 #                                                          #
-# ######################################################## #
-###                                                      # #
-#                                                        # #
-#                                                        # #
-#                                                        # #
-#                                                        # #
-#                                                        # #
-#                                                        # #
-#                                            # #         # #
-#                                            # #         # #
-#                                            # #         # #
-#                  F                         # #    # #  # #
-#                                            #      # #  # #
-#                                              #    # #  # #
-#                                            #      # #  # #
-#                                            # #    # #  # #
-#                                            # ###### #### #
-#                                            #           # #
-#                                            # # ######### #
-#                                            # # #       # #
-#                                            # # # ### # # #
-#                                            # #   # # # # #
-#                                            # # #   # # # #
-#                                        ##### # ##### ### #
-#                                        #   # #         # #
-#                                        # #   ########### #
-#                                        # # #             #
-########################################## #################
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+# #                                                        #
+###                                                        #
+#                                                          #
+############################################################
 */
 
 /*
