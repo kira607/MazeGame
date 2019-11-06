@@ -1,12 +1,13 @@
 //
 //  Created by kira607 on 04.11.2019.
-//  Copyright В© 2019 В Una Lada Reader. All rights reserved.
+//  Copyright В© 2019 В kira607. All rights reserved.
 //
 
 #include <iostream>
 #include <cstdlib>
 #include <ncurses.h>
 #include <unistd.h>
+#include <string>
 
 //#define sec 1000000
 
@@ -21,26 +22,19 @@ struct Charecter
 
 void frame(char** map, Charecter p, int mvs)
 {
+	char smap[] = "###########    # # ## ## #   ## F#   # ###########";
 	for(int i = 0; i < ht; i++)
 	{
 		for(int j = 0; j < wt; j++)
 		{
-			if((i == 0)||(i == ht - 1))
-            {
-                map[i][j] = '#';
-            }
-            else if((j == 0)||(j == wt - 1))
-            {
-                map[i][j] = '#';
-            }
-			else if((j == p.x)&&(i == p.y))
+			if((j == p.x)&&(i == p.y))
             {
                 map[i][j] = '@';
             }
-            else
-            {
-                map[i][j] = ' ';
-            }
+			else
+			{
+				map[i][j] = smap[i+j+(wt-1)*i];
+			}
 		}
 	}
 	
@@ -60,6 +54,18 @@ void frame(char** map, Charecter p, int mvs)
 	printw("A   D\n");
 	printw("  S  \n\n");
 	printw("To quit press q\n");
+}
+
+void init_map(char** map)
+{
+	char smap[] = "###########    # # ## ## #   ## F#   # ###########";
+	for(int i = 0; i < ht; i++)
+	{
+		for(int j = 0; j < wt; j++)
+		{
+			map[i][j] = smap[i+j+(wt-1)*i];
+		}
+	}
 }
 
 void finish(short a, int mvs)
@@ -95,6 +101,8 @@ int main()
 
 	int moves = 0;
 	
+	init_map(map);
+	
 	initscr();
 	//usleep(sec/2);
 	int x;
@@ -112,8 +120,11 @@ int main()
 			p.x++; 
 			moves++;
 			}
-			if(map[p.y][p.x+1] == 'F')
+			if(map[p.y][p.x] == 'F')
+			{
 			finish(1,moves);
+			return 0;
+			}
 			break;
 			
 			case 'a':
@@ -122,8 +133,11 @@ int main()
 			p.x--;
 			moves++;
 			}
-			if(map[p.y][p.x+1] == 'F')
+			if(map[p.y][p.x] == 'F')
+			{
 			finish(1,moves);
+			return 0;
+			}
 			break;
 			
 			case 'w':
@@ -132,8 +146,11 @@ int main()
 			p.y--;
 			moves++;
 			}
-			if(map[p.y][p.x+1] == 'F')
+			if(map[p.y][p.x] == 'F')
+			{
 			finish(1,moves);
+			return 0;
+			}
 			break;
 			
 			case 's':
@@ -142,8 +159,11 @@ int main()
 			p.y++;
 			moves++;
 			}
-			if(map[p.y][p.x+1] == 'F')
+			if(map[p.y][p.x] == 'F')
+			{
 			finish(1,moves);
+			return 0;
+			}
 			break;
 			
 			case 'q':
@@ -157,6 +177,7 @@ int main()
 }
 
 /*
+60x30
 ############################################################
 #                                                          #
 # ######################################################## #
@@ -167,22 +188,22 @@ int main()
 #                                                        # #
 #                                                        # #
 #                                                        # #
-#                                                        # #
-#                                                        # #
-#                                                        # #
-#                                                        # #
-#                                                        # #
-#                                                        # #
-#                                                        # #
-#                                                        # #
-#                                                        # #
-#                                                        # #
 #                                            # #         # #
 #                                            # #         # #
 #                                            # #         # #
-#                                            # #         # #
-#                                            # #         # #
-#                                        ##### #         # #
+#                  F                         # #    # #  # #
+#                                            #      # #  # #
+#                                              #    # #  # #
+#                                            #      # #  # #
+#                                            # #    # #  # #
+#                                            # ###### #### #
+#                                            #           # #
+#                                            # # ######### #
+#                                            # # #       # #
+#                                            # # # ### # # #
+#                                            # #   # # # # #
+#                                            # # #   # # # #
+#                                        ##### # ##### ### #
 #                                        #   # #         # #
 #                                        # #   ########### #
 #                                        # # #             #
@@ -195,4 +216,6 @@ int main()
 # ## #   #
 # F#   # #
 ##########
+
+###########    # # ## ## #   ## F#   # ###########
 */
