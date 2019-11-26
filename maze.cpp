@@ -31,7 +31,7 @@ void frame(char** map, Charecter p, int mvs, unsigned char* smap)
             {
                 map[i][j] = '@';
             }
-			else if(smap[i+j+(wt-1)*i]==0)
+			else if(smap[((ht-1-i)*wt+j)]==0) //(ht-1-i)*wt+j)
 			{
 				map[i][j] = '#';
 			}
